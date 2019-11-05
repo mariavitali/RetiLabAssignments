@@ -1,1 +1,0 @@
-memberSearchIndex = [{"p":"<Unnamed>","c":"Desks","l":"closeDesks()"},{"p":"<Unnamed>","c":"Desks","l":"Desks()","url":"%3Cinit%3E()"},{"p":"<Unnamed>","c":"Desks","l":"helpClient(Task)"},{"p":"<Unnamed>","c":"Desks","l":"peopleInTheSecondRoom()"},{"p":"<Unnamed>","c":"Desks","l":"secondWaitingRoomFull()"}]

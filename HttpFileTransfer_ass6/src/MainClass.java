@@ -7,6 +7,8 @@ public class MainClass {
     * Accept requests from any Web browser at URL localhost:8080.
     *
     * Start connection by querying localhost:8080, that will show a list of all possible file GET requests and instructions to proceed
+    *
+    * GITHUB UPDATE TEST
     */
 
 
@@ -27,7 +29,7 @@ public class MainClass {
                     System.out.println(line);
                     line = reader.readLine();
                 }
-                ResponseHandler handler = new ResponseHandler();
+                ResponseGenerator handler = new ResponseGenerator();
                 String httpResponse = handler.printMenu();
                 clientSocket.getOutputStream().write(httpResponse.getBytes("UTF-8"));
                 System.out.println("Response sent!");

@@ -10,8 +10,10 @@ public class ResponseGenerator {
     }
 
 
-    public String positiveResponse(String contentType){
-        String pos = httpVersion + httpOK + "Content-Type:" + contentType + "\r\n";
+    public String positiveResponse(String contentType, long length){
+        String pos = httpVersion + httpOK;
+        pos = pos + "Content-length: " + length + "\n";
+        pos = pos + "Content-Type:" + contentType + "\n\n";
         return pos;
     }
 

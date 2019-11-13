@@ -1,6 +1,10 @@
 import java.io.*;
 import java.net.Socket;
+
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 
 public class RequestHandler {    //extends Thread (è possibile adattare il codice a una soluzione multithread)
     private Socket client;
@@ -17,6 +21,7 @@ public class RequestHandler {    //extends Thread (è possibile adattare il codi
         try {
             InputStreamReader in = new InputStreamReader(client.getInputStream());
             BufferedReader reader = new BufferedReader(in);
+            OutputStream out = client.getOutputStream();
 
             //leggo la prima riga della richiesta
             String line = reader.readLine();
@@ -38,7 +43,6 @@ public class RequestHandler {    //extends Thread (è possibile adattare il codi
                 String requestedFile = parserHTTP(line);
                 ResponseGenerator rg = new ResponseGenerator();
                 String response;
-                OutputStream out = client.getOutputStream();
 
                 //se non sto richiedendo nessun file specifico, restituisco il file di testo con le istruzioni di utilizzo del servizio e la lista di file visualizzabili
                 if (requestedFile.equals("/")) {
@@ -47,13 +51,39 @@ public class RequestHandler {    //extends Thread (è possibile adattare il codi
 
                 System.out.println("Client requested: " + directoryPath + requestedFile);
                 File file = new File(directoryPath + requestedFile);
-                if (file.exists()) {
-                    String contentType = Files.probeContentType(file.toPath());
-                    System.out.println("The content type of the requested file is: " + contentType);
-                    response = rg.positiveResponse(contentType);
-                    out.write(response.getBytes());
-                    Files.copy(file.toPath(), out);
 
+                if (file.exists()) {
+                    response = rg.positiveResponse(Files.probeContentType(file.toPath()), Files.size(file.toPath()));
+                    out.write(response.getBytes());
+
+                    try {
+                        FileChannel channel = FileChannel.open(file.toPath(), StandardOpenOption.READ);
+                        ByteBuffer buffer = ByteBuffer.allocateDirect(1024 * 1024);
+                        boolean stop = false;
+
+                        while (!stop) {
+                            try {
+                                int bytesRead = channel.read(buffer);
+                                if (bytesRead == -1) {
+                                    stop = true;
+                                }
+                                buffer.flip();
+
+                                byte[] bytes = new byte[buffer.remaining()];
+                                buffer.get(bytes);
+                                out.write(bytes);
+
+                                buffer.clear();
+                            }catch(Exception e){
+                                e.printStackTrace();
+                            }
+
+                        }
+                    }catch(Exception e){
+                        e.printStackTrace();
+                    }
+
+                    /**/
                 } else {
                     response = rg.negativeResponse();
                     out.write(response.getBytes());
@@ -78,5 +108,6 @@ public class RequestHandler {    //extends Thread (è possibile adattare il codi
         String[] s = request.split(" ");
         return s[1];
     }
+
 
 }

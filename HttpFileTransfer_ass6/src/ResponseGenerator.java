@@ -1,18 +1,23 @@
 public class ResponseGenerator {
     private String httpVersion;
     private String httpOK;
-    private String httpEndResponse;
+    private String httpNotFound;
 
     public ResponseGenerator(){
         httpVersion = "HTTP/1.1 ";
-        httpOK = "200 OK";
-        httpEndResponse = "\r\n\r\n";
+        httpOK = "200 OK\n";
+        httpNotFound = "404 NotFound\n";
     }
 
-    public String printMenu(){
-        //retrieve menu file
-        String instructions = httpVersion + httpOK + httpEndResponse + "How to use the service:\n";
-        //System.out.println(instructions);
-        return instructions;
+
+    public String positiveResponse(String contentType){
+        String pos = httpVersion + httpOK + "Content-Type:" + contentType + "\r\n";
+        return pos;
     }
+
+    public String negativeResponse(){
+        String neg = httpVersion + httpNotFound + "Content-Type: text/html\n\n";
+        return neg;
+    }
+
 }
